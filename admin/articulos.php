@@ -1,5 +1,19 @@
 <?php include("../includes/header.php") ?>
 
+<?php
+    //instancia la db y la conexion
+    $baseDeDatos = new Basemysql();
+    $db = $baseDeDatos->connect();
+
+    $articulo = new Articulo($db);
+    $resultado = $articulo->leer();
+
+    //var_dump($resultado);
+
+
+?>
+
+
 
 <div class="row">
     <div class="col-sm-6">
@@ -25,19 +39,21 @@
             </thead>
             <tbody>
 
+            <?php foreach($resultado as $articulo) : ?>
+
                 <tr>
-                    <td>1</td>
-                    <td>test</td>
+                    <td><?php echo $articulo->id ?></td>
+                    <td><?php echo $articulo->titulo ?></td>
                     <td>
-                        <img class="img/articulos/" style="width:180px;">
+                        <img class="img-fluid" src="<?php echo RUTA_FRONT ."img/articulos/" .$articulo->imagen?>" style="width:180px;">
                     </td>
-                    <td>test</td>
-                    <td>test</td>
+                    <td><?php echo $articulo->texto ?></td>
+                    <td><?php echo $articulo->fecha_creacion?></td>
                     <td>
-                        <a href="editar_articulo.php" class="btn btn-warning"><i class="bi bi-pencil-fill"></i></a>
+                        <a href="editar_articulo.php?id=<?php echo $articulo->id ?>" class="btn btn-warning"><i class="bi bi-pencil-fill"></i></a>
                     </td>
                 </tr>
-
+            <?php endforeach; ?>
             </tbody>
         </table>
     </div>
