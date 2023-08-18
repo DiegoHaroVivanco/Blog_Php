@@ -8,3 +8,4 @@
     //Para el front
     //define('RUTA_FRONT', 'http://localhost/PROYPHP/blog_php/'); // apache
     define('RUTA_FRONT', 'http://localhost:4000/');
+?>

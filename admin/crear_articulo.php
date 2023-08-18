@@ -1,7 +1,57 @@
 <?php include("../includes/header.php") ?>
 
+    <?php
+        $baseDeDatos = new Basemysql();
+        $db = $baseDeDatos->connect();
+
+        if(isset($_POST['crearArticulo'])){
+
+            // obtener los valores
+            $titulo = $_POST["titulo"];
+            $texto = $_POST["texto"];
+
+            if($_FILES["imagen"]["error"] > 0){
+                $error = "Error, ningún archivo seleccionado";
+            
+            }else{
+                if(empty($titulo) || empty($texto)){
+                    $error = "Error, algunos campos están vacíos";
+                }else{
+                    $image = $_FILES['imagen']['name'];
+                    $imageArr = explode('.', $image);
+                    $rand = rand(1000, 99999);
+
+                    // nuevo nombre de la img
+                    $imgName = $imageArr[0] .$rand .'.' .$imageArr[1];
+                    $rutaFinal = "../img/articulos/" .$imgName;
+                    move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaFinal);
+                
+                    $articulo = new Articulo($db);
+
+                    if($articulo->crear($titulo, $imgName, $texto)){
+                        $mensaje = "Artículo creado correctamente";
+                        // redirección
+                        header(("Location:articulos.php?mensaje=" .urldecode($mensaje)));
+                    }
+
+
+                }
+            }
+        }
+    
+    ?>
+
+
+
     <div class="row">
-        
+        <div class="col-sm-12">
+            <?php if(isset($error)) : ?>
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong><?php echo $error; ?></strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="row">

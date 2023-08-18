@@ -1,5 +1,21 @@
 <?php include("../includes/header.php") ?>
 
+<?php
+    //instancia la db y la conexion
+    $baseDeDatos = new Basemysql();
+    $db = $baseDeDatos->connect();
+
+    // valido si le envio el id
+    if(isset ($_GET['id'])){
+        $id = $_GET['id'];
+    }
+
+    $articulos = new Articulo($db);
+    $resultado = $articulos -> leer_individual($id);
+
+?>
+
+
 <div class="row">
        
     </div>
@@ -13,15 +29,15 @@
         <div class="col-sm-6 offset-3">
         <form method="POST" action="" enctype="multipart/form-data">
 
-            <input type="hidden" name="id" value="4">
+            <input type="hidden" name="id" value="<?php $resultado-> id ?>">
 
             <div class="mb-3">
                 <label for="titulo" class="form-label">Título:</label>
-                <input type="text" class="form-control" name="titulo" id="titulo" value="titulo test">               
+                <input type="text" class="form-control" name="titulo" id="titulo" value="<?php echo $resultado->titulo ?>">               
             </div>
 
             <div class="mb-3">
-                <img class="img-fluid img-thumbnail" src="../img/articulos/img4.jpg">
+                <img class="img-fluid img-thumbnail" src="<?php echo RUTA_FRONT ."img/articulos/" .$resultado->imagen ?>">
             </div>
 
             <div class="mb-3">
@@ -31,7 +47,8 @@
             <div class="mb-3">
                 <label for="texto">Texto</label>   
                 <textarea class="form-control" placeholder="Escriba el texto de su artículo" name="texto" style="height: 200px">
-               ejemplo texto
+                    <?php echo $resultado-> texto ?>
+
                 </textarea>              
             </div>          
         
