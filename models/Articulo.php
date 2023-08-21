@@ -42,6 +42,7 @@ class Articulo{
         return $articulos;
     }
 
+    // crear articulo
     public function crear($titulo, $imgName, $texto){
         $query = 'INSERT INTO ' .$this->table . ' (titulo, imagen, texto)VALUES(:titulo, :imagen, :texto) ';
         
@@ -59,8 +60,54 @@ class Articulo{
         printf("error $s\n", $stnt->error);
     }
 
+    public function actualizar($id, $titulo, $texto, $imgName){
+
+        if($imgName == ''){
+            $query = 'UPDATE ' . $this->table . ' SET titulo = :titulo, texto = :texto WHERE id = :id';
+            
+            $stmt = $this->conn->prepare($query);
+
+            //se vinculan los parámetros
+            $stmt->bindParam(":titulo", $titulo, PDO::PARAM_STR);
+            $stmt->bindParam(":texto", $texto, PDO::PARAM_STR);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+
+            if($stmt->execute()){
+                return true;
+            }
+
+        }else{
+            $query = 'UPDATE ' . $this->table . ' SET titulo = :titulo, texto = :texto, imagen = :imagen WHERE id = :id';
+        
+            $stmt = $this->conn->prepare($query);
+
+            $stmt->bindParam(":titulo", $titulo, PDO::PARAM_STR);
+            $stmt->bindParam(":texto", $texto, PDO::PARAM_STR);
+            $stmt->bindParam(":imagen", $imgName, PDO::PARAM_STR);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+
+            if($stmt->execute()){
+                return true;
+            }
+
+        }
+        printf("error $s\n", $stmt->error);
 
 
+    }
+    
+
+    public function borrar($id){
+
+        $query = 'DELETE FROM ' .$this->table . ' WHERE id = :id';
+        $stmt = $this->conn->prepare($query);
+        $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+
+        if($stmt->execute()){
+            return true;
+        }
+        printf("error $s\n", $stmt->error);
+    }
 }
 
 

@@ -1,7 +1,7 @@
 <?php include("../includes/header.php") ?>
 
 <?php
-    //instancia la db y la conexion
+    // instancia la db y la conexion
     $baseDeDatos = new Basemysql();
     $db = $baseDeDatos->connect();
 
@@ -13,12 +13,76 @@
     $articulos = new Articulo($db);
     $resultado = $articulos -> leer_individual($id);
 
+    if(isset ($_POST['editarArticulo'])){
+
+        $idArticulo = $_GET["id"];
+        $titulo = $_POST["titulo"]; // capturo el valor envíado por la solicitud POST
+        $texto = $_POST["texto"];
+        if($_FILES["imagen"]["error"] > 0){
+            // no se sube la imgen pero va a dejar actualizar los demás campos
+            if(empty($titulo) || empty($texto)){
+                $error = "Error, algunos campos están vacíos";
+            }else{
+
+                $imgName = "";
+                if($articulos->actualizar($idArticulo, $titulo, $texto, $imgName)){
+                    $mensaje = "Artículo actualizado correctamente";
+                    header("Location:articulos.php?mensaje=" .urldecode($mensaje));
+                    exit();
+                }else{
+                    $error = "Error, no se pudo actualizar";
+                }
+            }
+
+        }else{
+
+            if(empty($titulo) || empty($texto)){
+                $error = "Error, algunos campos están vacíos";
+            }else{
+
+                $image = $_FILES['imagen']['name'];
+                $imageArr = explode('.', $image);
+                $rand = rand(1000, 99999);
+                $imgName = $imageArr[0] .$rand . '.' . $imageArr[1];
+                $rutaFinal = "../img/articulos/" . $imgName;
+                move_uploaded_file($_FILES['imagen']['tmp_name'], $rutaFinal);
+
+                if($articulos->actualizar($idArticulo, $titulo, $texto, $imgName)){
+                    $mensaje = "Artículo actualizado correctamente";
+                    header("Location:articulos.php?mensaje=" . urldecode($mensaje));
+                }else{
+                    $error = "Error, no se pudo actualizar";
+                }
+            }
+
+        }
+
+    }
+    if(isset($_POST['borrarArticulo'])){
+
+        $idArticulo = $_GET['id'];
+        if($articulos->borrar($idArticulo)){
+            $mensaje = "Artículo borrado correctamente";
+            header("Location:articulos.php?mensaje=" .urldecode($mensaje));
+        }else{
+            $error = "Error, no se pudo borrar el artículo";
+        }
+    }
+
 ?>
 
 
 <div class="row">
-       
+    <div class="col-sm-12">
+        <?php if(isset($error)) : ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong><?php echo $error; ?></strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" ></button>
+
+            </div>
+        <?php endif; ?>
     </div>
+</div>
 
 <div class="row">
         <div class="col-sm-6">
